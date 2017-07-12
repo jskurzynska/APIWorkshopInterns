@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using APIWorkshop.Models;
 using APIWorkshop.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIWorkshop.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class BoardsController : Controller
     {
