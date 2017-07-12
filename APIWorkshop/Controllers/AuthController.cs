@@ -1,19 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using APIWorkshop.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace APIWorkshop.Controllers
 {
     public class AuthController : Controller
     {
+        private IConfigurationRoot _configuration;
+
+        public AuthController(IConfigurationRoot configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpPost("api/auth/token")]
         public IActionResult CreateToken([FromBody] CredentialModel model)
         {
@@ -41,12 +45,12 @@ namespace APIWorkshop.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) 
                     };
 
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKeyANdVerVeryLong"));
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                     var token = new JwtSecurityToken(
-                                issuer: "http://localhost:8888",
-                                audience: "http://localhost:8888",
+                                issuer: _configuration["Tokens:Issuer"],
+                                audience: _configuration["Tokens:Audience"],
                                 claims: claims,
                                 expires: DateTime.UtcNow.AddMinutes(15),
                                 signingCredentials: creds

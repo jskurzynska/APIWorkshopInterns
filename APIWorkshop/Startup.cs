@@ -33,6 +33,7 @@ namespace APIWorkshop
         {
             // Add framework services.
             services.AddMvc();
+            services.AddSingleton(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,10 +48,14 @@ namespace APIWorkshop
                 AutomaticChallenge = true,
                 TokenValidationParameters = new TokenValidationParameters()
                 {
+                    // Validate the JWT Issuer (iss) claim
                     ValidIssuer = Configuration["Tokens:Issuer"],
+                    // Validate the JWT Audience (aud) claim
                     ValidAudience = Configuration["Tokens:Audience"],
+                    // The signing key must match!
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"])),
+                    // Validate the token expiry
                     ValidateLifetime = true
                 }
             });
